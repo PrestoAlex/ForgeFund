@@ -1,0 +1,88 @@
+{
+    "functions": [
+        {
+            "name": "lockFunds",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "amount",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "approveMilestone",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "milestoneId",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "releaseFunds",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "milestoneId",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "amount",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "getVaultInfo",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "locked",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "released",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "approved",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "total",
+                    "type": "UINT256"
+                }
+            ]
+        }
+    ],
+    "events": []
+}

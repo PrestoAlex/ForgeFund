@@ -1,0 +1,32 @@
+{
+  "name": "forgefund-contracts",
+  "version": "1.0.0",
+  "description": "ForgeFund OP_NET Smart Contracts",
+  "type": "module",
+  "scripts": {
+    "build:factory": "asc src/factory/index.ts --target release --config asconfig-factory.json --use abort=src/factory/index/abort",
+    "build:milestone": "asc src/milestone/index.ts --target release --config asconfig-milestone.json --use abort=src/milestone/index/abort",
+    "build:taskboard": "asc src/taskboard/index.ts --target release --config asconfig-taskboard.json --use abort=src/taskboard/index/abort",
+    "build:escrow": "asc src/escrow/index.ts --target release --config asconfig-escrow.json --use abort=src/escrow/index/abort",
+    "build:all": "npm run build:factory && npm run build:milestone && npm run build:taskboard && npm run build:escrow",
+    "deploy:factory": "npm run build:factory && WASM_PATH=./build/ProjectFactory.wasm npx tsx deploy.ts",
+    "deploy:milestone": "npm run build:milestone && WASM_PATH=./build/MilestoneVault.wasm npx tsx deploy.ts",
+    "deploy:taskboard": "npm run build:taskboard && WASM_PATH=./build/TaskBoard.wasm npx tsx deploy.ts",
+    "deploy:escrow": "npm run build:escrow && WASM_PATH=./build/EscrowEngine.wasm npx tsx deploy.ts",
+    "deploy:all": "npm run build:all && npx tsx deploy-all.ts"
+  },
+  "dependencies": {
+    "@assemblyscript/loader": "^0.28.9",
+    "@btc-vision/as-bignum": "^0.1.2",
+    "@btc-vision/assemblyscript": "^0.29.2",
+    "@btc-vision/bitcoin": "^7.0.0-rc.6",
+    "@btc-vision/btc-runtime": "^1.11.0-rc.10",
+    "@btc-vision/opnet-transform": "^1.2.0",
+    "@btc-vision/transaction": "^1.8.0-rc.10",
+    "dotenv": "^17.3.1",
+    "opnet": "^1.8.1-rc.17"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}

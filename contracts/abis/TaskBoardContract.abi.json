@@ -1,0 +1,84 @@
+{
+    "functions": [
+        {
+            "name": "createTask",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "reward",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "deadline",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "taskId",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "assignTask",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "taskId",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "completeTask",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "taskId",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "getTaskBoardInfo",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "totalTasks",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "completedTasks",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "totalRewards",
+                    "type": "UINT256"
+                }
+            ]
+        }
+    ],
+    "events": []
+}

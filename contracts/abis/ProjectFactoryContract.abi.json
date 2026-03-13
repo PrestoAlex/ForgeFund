@@ -1,0 +1,71 @@
+{
+    "functions": [
+        {
+            "name": "createProject",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "fundingGoal",
+                    "type": "UINT256"
+                },
+                {
+                    "name": "deadline",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "projectId",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "recordFunding",
+            "type": "Function",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [
+                {
+                    "name": "amount",
+                    "type": "UINT256"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "BOOL"
+                }
+            ]
+        },
+        {
+            "name": "getProjectCount",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "count",
+                    "type": "UINT256"
+                }
+            ]
+        },
+        {
+            "name": "getTotalFunded",
+            "type": "View",
+            "payable": false,
+            "onlyOwner": false,
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "total",
+                    "type": "UINT256"
+                }
+            ]
+        }
+    ],
+    "events": []
+}
