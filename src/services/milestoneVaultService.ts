@@ -1,7 +1,14 @@
 import { CONTRACT_ADDRESSES, OPNET_CONFIG } from '../config/contracts';
 
+type AbiEntry = {
+  type: string;
+  name: string;
+  inputs?: { name: string; type: string }[];
+  outputs?: { name: string; type: string }[];
+};
+
 // MilestoneVault ABI
-export const MILESTONE_VAULT_ABI = [
+export const MILESTONE_VAULT_ABI: AbiEntry[] = [
   {
     type: 'function',
     name: 'lockFunds',
@@ -47,7 +54,7 @@ export const MILESTONE_VAULT_ABI = [
 ];
 
 // Lazy loading SDK
-let sdkPromise = null;
+let sdkPromise: Promise<typeof import('opnet')> | null = null;
 
 async function loadSDK() {
   if (!sdkPromise) {
@@ -57,9 +64,9 @@ async function loadSDK() {
 }
 
 // Normalize ABI for OP_NET
-async function normalizeAbi(abi) {
+async function normalizeAbi(abi: AbiEntry[]): Promise<AbiEntry[]> {
   const { ABIDataTypes, BitcoinAbiTypes } = await loadSDK();
-  return abi.map((entry) => ({
+  return abi.map((entry: AbiEntry) => ({
     ...entry,
     type: typeof entry.type === 'string' && entry.type.toLowerCase() === 'function'
       ? BitcoinAbiTypes.Function
@@ -75,19 +82,19 @@ async function normalizeAbi(abi) {
   }));
 }
 
-function normalizeAbiType(type, ABIDataTypes) {
-  const typeMap = {
-    'uint256': ABIDataTypes.UINT256,
-    'bool': ABIDataTypes.BOOL,
-    'address': ABIDataTypes.ADDRESS,
-    'string': ABIDataTypes.STRING,
-    'bytes': ABIDataTypes.BYTES,
+function normalizeAbiType(type: string, ABIDataTypes: Record<string, any>) {
+  const typeMap: Record<string, any> = {
+    uint256: ABIDataTypes.UINT256,
+    bool: ABIDataTypes.BOOL,
+    address: ABIDataTypes.ADDRESS,
+    string: ABIDataTypes.STRING,
+    bytes: ABIDataTypes.BYTES,
   };
   return typeMap[type] || type;
 }
 
 // Resolve network
-async function resolveNetwork(networkOverride) {
+async function resolveNetwork(networkOverride?: string | object): Promise<any> {
   if (networkOverride && typeof networkOverride === 'object') {
     return networkOverride;
   }
@@ -102,24 +109,24 @@ async function resolveNetwork(networkOverride) {
 }
 
 // Get contract instance
-export async function getMilestoneVaultContract(senderAddress) {
+export async function getMilestoneVaultContract(senderAddress: string): Promise<any> {
   const { getContract, JSONRpcProvider } = await loadSDK();
   
-  const btcNetwork = await resolveNetwork('testnet');
+  const btcNetwork = (await resolveNetwork('testnet')) as any;
   
   const provider = new JSONRpcProvider({
     url: OPNET_CONFIG.rpcUrl,
-    network: btcNetwork,
+    network: btcNetwork as any,
   });
 
   const normalizedAbi = await normalizeAbi(MILESTONE_VAULT_ABI);
   
   return getContract(
     CONTRACT_ADDRESSES.milestoneVault,
-    normalizedAbi,
+    normalizedAbi as any,
     provider,
     btcNetwork
-  );
+  ) as any;
 }
 
 // Service class
@@ -142,11 +149,11 @@ export class MilestoneVaultService {
     }
 
     try {
-      const contract = await getMilestoneVaultContract(this.senderAddress);
+      const contract = (await getMilestoneVaultContract(this.senderAddress)) as any;
       
       const amountBigInt = BigInt(Math.floor(parseFloat(amount) * 1e18));
 
-      const simulation = await contract.lockFunds(amountBigInt);
+      const simulation = await (contract as any).lockFunds(amountBigInt);
       
       const btcNetwork = await resolveNetwork('testnet');
       const receipt = await simulation.sendTransaction({
@@ -170,11 +177,11 @@ export class MilestoneVaultService {
     }
 
     try {
-      const contract = await getMilestoneVaultContract(this.senderAddress);
+      const contract = (await getMilestoneVaultContract(this.senderAddress)) as any;
       
       const milestoneIdBigInt = BigInt(milestoneId);
 
-      const simulation = await contract.approveMilestone(milestoneIdBigInt);
+      const simulation = await (contract as any).approveMilestone(milestoneIdBigInt);
       
       const btcNetwork = await resolveNetwork('testnet');
       const receipt = await simulation.sendTransaction({
@@ -198,12 +205,12 @@ export class MilestoneVaultService {
     }
 
     try {
-      const contract = await getMilestoneVaultContract(this.senderAddress);
+      const contract = (await getMilestoneVaultContract(this.senderAddress)) as any;
       
       const milestoneIdBigInt = BigInt(milestoneId);
       const amountBigInt = BigInt(Math.floor(parseFloat(amount) * 1e18));
 
-      const simulation = await contract.releaseFunds(milestoneIdBigInt, amountBigInt);
+      const simulation = await (contract as any).releaseFunds(milestoneIdBigInt, amountBigInt);
       
       const btcNetwork = await resolveNetwork('testnet');
       const receipt = await simulation.sendTransaction({
@@ -223,8 +230,8 @@ export class MilestoneVaultService {
   // Get vault info (view function)
   async getVaultInfo(): Promise<{ locked: string; released: string; approved: string; total: string }> {
     try {
-      const contract = await getMilestoneVaultContract(this.senderAddress || '');
-      const result = await contract.getVaultInfo();
+      const contract = (await getMilestoneVaultContract(this.senderAddress || '')) as any;
+      const result = await (contract as any).getVaultInfo();
       
       return {
         locked: result.locked?.toString() || '0',

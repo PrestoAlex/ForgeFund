@@ -1,7 +1,14 @@
 import { CONTRACT_ADDRESSES, OPNET_CONFIG } from '../config/contracts';
 
+type AbiEntry = {
+  type: string;
+  name: string;
+  inputs?: { name: string; type: string }[];
+  outputs?: { name: string; type: string }[];
+};
+
 // ProjectFactory ABI
-export const PROJECT_FACTORY_ABI = [
+export const PROJECT_FACTORY_ABI: AbiEntry[] = [
   {
     type: 'function',
     name: 'createProject',
@@ -42,7 +49,7 @@ export const PROJECT_FACTORY_ABI = [
 ];
 
 // Lazy loading SDK
-let sdkPromise = null;
+let sdkPromise: Promise<typeof import('opnet')> | null = null;
 
 async function loadSDK() {
   if (!sdkPromise) {
@@ -52,9 +59,9 @@ async function loadSDK() {
 }
 
 // Normalize ABI for OP_NET
-async function normalizeAbi(abi) {
+async function normalizeAbi(abi: AbiEntry[]): Promise<AbiEntry[]> {
   const { ABIDataTypes, BitcoinAbiTypes } = await loadSDK();
-  return abi.map((entry) => ({
+  return abi.map((entry: AbiEntry) => ({
     ...entry,
     type: typeof entry.type === 'string' && entry.type.toLowerCase() === 'function'
       ? BitcoinAbiTypes.Function
@@ -70,19 +77,19 @@ async function normalizeAbi(abi) {
   }));
 }
 
-function normalizeAbiType(type, ABIDataTypes) {
-  const typeMap = {
-    'uint256': ABIDataTypes.UINT256,
-    'bool': ABIDataTypes.BOOL,
-    'address': ABIDataTypes.ADDRESS,
-    'string': ABIDataTypes.STRING,
-    'bytes': ABIDataTypes.BYTES,
+function normalizeAbiType(type: string, ABIDataTypes: Record<string, any>) {
+  const typeMap: Record<string, any> = {
+    uint256: ABIDataTypes.UINT256,
+    bool: ABIDataTypes.BOOL,
+    address: ABIDataTypes.ADDRESS,
+    string: ABIDataTypes.STRING,
+    bytes: ABIDataTypes.BYTES,
   };
   return typeMap[type] || type;
 }
 
 // Resolve network like StakeYourTake
-async function resolveNetwork(networkOverride) {
+async function resolveNetwork(networkOverride?: string | object): Promise<any> {
   if (networkOverride && typeof networkOverride === 'object') {
     return networkOverride;
   }
@@ -97,24 +104,24 @@ async function resolveNetwork(networkOverride) {
 }
 
 // Get contract instance
-export async function getProjectFactoryContract(senderAddress) {
-  const { getContract, JSONRpcProvider, BitcoinAbiTypes } = await loadSDK();
+export async function getProjectFactoryContract(senderAddress: string): Promise<any> {
+  const { getContract, JSONRpcProvider } = await loadSDK();
   
-  const btcNetwork = await resolveNetwork('testnet');
+  const btcNetwork = (await resolveNetwork('testnet')) as any;
   
   const provider = new JSONRpcProvider({
     url: OPNET_CONFIG.rpcUrl,
-    network: btcNetwork,
+    network: btcNetwork as any,
   });
 
   const normalizedAbi = await normalizeAbi(PROJECT_FACTORY_ABI);
   
   return getContract(
     CONTRACT_ADDRESSES.projectFactory,
-    normalizedAbi,
+    normalizedAbi as any,
     provider,
     btcNetwork
-  );
+  ) as any;
 }
 
 // Service class
@@ -137,7 +144,7 @@ export class ProjectFactoryService {
     }
 
     try {
-      const contract = await getProjectFactoryContract(this.senderAddress);
+      const contract = (await getProjectFactoryContract(this.senderAddress)) as any;
       
       // Convert funding goal to BigInt (with 18 decimals)
       const fundingGoalBigInt = BigInt(Math.floor(parseFloat(fundingGoal) * 1e18));
@@ -167,12 +174,12 @@ export class ProjectFactoryService {
     }
 
     try {
-      const contract = await getProjectFactoryContract(this.senderAddress);
+      const contract = (await getProjectFactoryContract(this.senderAddress)) as any;
       
       // Convert amount to BigInt (with 18 decimals)
       const amountBigInt = BigInt(Math.floor(parseFloat(amount) * 1e18));
 
-      const simulation = await contract.recordFunding(amountBigInt);
+      const simulation = await (contract as any).recordFunding(amountBigInt);
       
       const btcNetwork = await resolveNetwork('testnet');
       const receipt = await simulation.sendTransaction({
@@ -192,7 +199,7 @@ export class ProjectFactoryService {
   // Get project count (view function)
   async getProjectCount(): Promise<string> {
     try {
-      const contract = await getProjectFactoryContract(this.senderAddress || '');
+      const contract = (await getProjectFactoryContract(this.senderAddress || '')) as any;
       const result = await contract.getProjectCount();
       return result.toString();
     } catch (error) {
@@ -204,8 +211,8 @@ export class ProjectFactoryService {
   // Get total funded amount (view function)
   async getTotalFunded(): Promise<string> {
     try {
-      const contract = await getProjectFactoryContract(this.senderAddress || '');
-      const result = await contract.getTotalFunded();
+      const contract = (await getProjectFactoryContract(this.senderAddress || '')) as any;
+      const result = await (contract as any).getTotalFunded();
       return result.toString();
     } catch (error) {
       console.error('❌ Error getting total funded:', error);
